@@ -1,0 +1,3 @@
+if you want the test code to be in a tests packge, one should move the module code into a src folder.
+See documentation of py.test : https://docs.pytest.org/en/latest/goodpractices.html
+especially the source structure

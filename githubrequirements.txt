@@ -1,0 +1,5 @@
+# Here you can add python projects from github
+# Use the 'egg' if you just want the latest version
+# If you want to use a local checkout, dont add the dependency, and just include it to your python path
+# Uncomment the following line to get the latest version of bdr-analytics-py in your environment
+#-e git+ssh://git@github.com/BigDataRepublic/bdr-analytics.git#egg=bdranalytics-0.1

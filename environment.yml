@@ -1,0 +1,27 @@
+name: spotifAI
+dependencies:
+
+- python=3.6
+
+- NumPy>=1.6.1
+- SciPy>=0.9
+- scikit-learn>=0.18
+- pytest
+- jupyter
+- matplotlib
+- seaborn
+- pandas
+- statsmodels
+- dill
+- click
+- Sphinx
+- coverage
+- flake8
+- pip
+- pip:
+  - pytest-runner
+  - awscli
+  - python-dotenv>=0.5.1
+  - pandas_profiling
+  - -rgithubrequirements.txt
+
