@@ -1,7 +1,42 @@
 spotifAI
 ==============================
+This is the repository for the Spotify hackathon days. 
 
-spotify hackathon days
+Git branching strategy & pull requests
+------------
+![img.png](references/img.png)
+
+For every feature, a separate branch is created from the development branch. 
+The naming convention for feature branches is: 
+
+    <Jira_issue_id>-<small-description> (e.g. spot-2-EDA-spotify-API)
+
+To create a new branch and switch to your new branch, from the development branch, run the following in your terminal:
+
+    git checkout -b <branch_name>
+
+Now, you can start developing your feature. During developing, try to keep your commits coherent and avoid commits with many changes in many different files to keep it manageable to review your changes. 
+Do not use 'git add .', but add your changes individually or use this command to go through them one by one and accept or reject them:
+
+    git add -p
+
+Then, commit your changes and write a short and comprehensible commit message for it:
+
+    git commit -m "<description of changes in past tense>"
+
+and push it to remote with:
+
+    git push origin <branch_name>
+
+Now, you can make a pull request for 'development' on Github by visiting https://github.com/Vantage-AI/spotifAI/compare/development?expand=1.
+Set the 'base' to the development branch and the 'from' to your feature branch and assign a reviewer.
+
+After the pull request is accepted and merged, with or without comments and/or changes, 
+you can delete the feature branch with:
+
+    git push -d origin <branch_name>
+
+The development branch is merged into master only for new releases of the spotifAI application.
 
 Project Organization
 ------------
