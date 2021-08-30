@@ -17,6 +17,7 @@ dependencies:
 - Sphinx
 - coverage
 - flake8
+- black
 - pip
 - pip:
   - pytest-runner
@@ -24,4 +25,5 @@ dependencies:
   - python-dotenv>=0.5.1
   - pandas_profiling
   - -rgithubrequirements.txt
+  - spotipy>=2.19.0
 
