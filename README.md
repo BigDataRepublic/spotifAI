@@ -7,16 +7,26 @@ Git branching strategy & pull requests
 ![img.png](references/img.png)
 
 For every feature, a separate branch is created from the development branch. 
+Before creating a feature branch, 
+make sure your local development branch is up-to-date with its remote version with
+
+    git pull 
+
+
+To create a new branch and switch to your new branch, 
+from the development branch, run the following in your terminal:
+
+    git checkout -b <branch_name>
+
 The naming convention for feature branches is: 
 
     <Jira_issue_id>-<small-description> (e.g. spot-2-EDA-spotify-API)
 
-To create a new branch and switch to your new branch, from the development branch, run the following in your terminal:
-
-    git checkout -b <branch_name>
-
-Now, you can start developing your feature. During developing, try to keep your commits coherent and avoid commits with many changes in many different files to keep it manageable to review your changes. 
-Do not use 'git add .', but add your changes individually or use this command to go through them one by one and accept or reject them:
+Now, you can start developing your feature. During developing, 
+try to keep your commits coherent and avoid commits with many changes 
+in many different files to keep it manageable to review your changes. 
+Do not use 'git add .', but add your changes individually or use this 
+command to go through them one by one and accept or reject them:
 
     git add -p
 
