@@ -11,12 +11,18 @@ import pandas as pd
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from urllib3.exceptions import ReadTimeoutError, MaxRetryError
+import waitress
+from flask import Flask
 
 
 load_dotenv()  # load environment variables from .env file (file not on github)
 
 
 class Scraper:
+    """This class initializes with a connection to the Spotify API
+    and holds all functions to scrape a spotify playlist along with
+    additional features for the tracks in that playlist"""
+
     def __init__(self):
         cid = os.environ.get("SPOTIFY_CLIENT_ID")
         secret = os.environ.get("SPOTIFY_CLIENT_SECRET")
@@ -131,28 +137,24 @@ class Scraper:
             / len(artists_objects)
         )
 
+    def get_playlist_with_features(self, playlist_id):
+        """returns a dataframe with all tracks from a playlist,
+        along with additional features that are required
+        for making predictions on hit potential"""
 
-if __name__ == "__main__":
-
-    scraper_object = Scraper()
-
-    def get_new_music_friday(scraper):
-        """returns a dataframe with all tracks
-        from the global new music friday playlist,
-        along with additional features that are
-        required for making predictions on hit potential"""
-        # collect tracks from global new music friday (nmf) playlist:
-        # https://open.spotify.com/playlist/37i9dQZF1DX4JAvHpjipBk?si=a4f193c4d62c4d05
-        new_music_friday_playlist_id = "37i9dQZF1DX4JAvHpjipBk"
-        nmf = scraper.get_tracks_from_playlist(new_music_friday_playlist_id)
+        nmf = scraper.get_tracks_from_playlist(playlist_id)
 
         # collect audio features for the nmf tracks
-        audio_features = pd.concat(
-            [
-                pd.DataFrame(scraper.get_audio_features(track_id=uid))
-                for uid in nmf.track_id.values
-            ]
-        ).rename(columns={"id": "track_id"})
+        audio_features = (
+            pd.concat(
+                [
+                    pd.DataFrame(self.get_audio_features(track_id=uid))
+                    for uid in nmf.track_id.values
+                ]
+            )
+                .rename(columns={"id": "track_id"})
+                .drop(columns=["type", "uri", "track_href", "analysis_url"])
+        )
 
         # merge nmf tracks with audio features
         df = pd.merge(nmf, audio_features, on="track_id")
@@ -160,7 +162,7 @@ if __name__ == "__main__":
         # add other track info (release_date, explicit, artist_ids)
         other_track_info_dict = {}
         for track_id in df.track_id.values:
-            release_date, explicit_boolean, artist_ids = scraper.get_other_track_info(
+            release_date, explicit_boolean, artist_ids = self.get_other_track_info(
                 track_id
             )
             other_track_info_dict[track_id] = {
@@ -175,12 +177,12 @@ if __name__ == "__main__":
                     lambda uid: other_track_info_dict.get(uid)["release_date"]
                 )
             )
-            .assign(
+                .assign(
                 explicit=lambda df: df["track_id"].apply(
                     lambda uid: other_track_info_dict.get(uid)["explicit"]
                 )
             )
-            .assign(
+                .assign(
                 artist_ids=lambda df: df["track_id"].apply(
                     lambda uid: other_track_info_dict.get(uid)["artist_ids"]
                 )
@@ -190,7 +192,7 @@ if __name__ == "__main__":
         # add artist-level features
         artist_features_dict = {}
         for track_id in df.track_id.values:
-            followers, artist_popularity = scraper.get_artist_features(
+            followers, artist_popularity = self.get_artist_features(
                 df.loc[df.track_id == track_id, "artist_ids"].values[0]
             )
             artist_features_dict[track_id] = {
@@ -213,11 +215,32 @@ if __name__ == "__main__":
 
         return df
 
-    # scrape tracks from new music friday, along with additional features for modelling
-    try:
-        df = get_new_music_friday(scraper_object)
-    except (ReadTimeoutError, MaxRetryError):
-        # in case the https request was not successful
-        print("Trying again after 5 minutes")
-        time.sleep(300)
-        df = get_new_music_friday(scraper_object)
+    def get_new_music_friday(self):
+        """Invokes the function get_playlist_with_features
+         specifically for the global Spotify playlist 'New Music Friday'"""
+
+        # collect tracks from global new music friday (nmf) playlist:
+        # https://open.spotify.com/playlist/37i9dQZF1DX4JAvHpjipBk?si=a4f193c4d62c4d05
+        new_music_friday_playlist_id = "37i9dQZF1DX4JAvHpjipBk"
+
+        try:
+            playlist_df = self.get_playlist_with_features(new_music_friday_playlist_id)
+        except (ReadTimeoutError, MaxRetryError):
+            # in case the https request was not successful
+            print("Trying again after 5 minutes")
+            time.sleep(300)
+            playlist_df = self.get_playlist_with_features(new_music_friday_playlist_id)
+
+        return playlist_df.to_json()
+
+if __name__ == "__main__":
+
+    scraper = Scraper()
+
+    app = Flask(__name__)
+
+    # Define API endpoints
+    app.add_url_rule("/new_music_friday/", view_func=scraper.get_new_music_friday, methods=["POST"])
+
+    waitress.serve(app, port=8080)
+
