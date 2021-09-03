@@ -1,5 +1,5 @@
 all: requirements model finaldataset
-.PHONY: clean data lint requirements sync_data_to_s3 sync_data_from_s3
+.PHONY: clean data lint requirements sync_data_to_s3 sync_data_from_s3 black
 
 #################################################################################
 # GLOBALS                                                                       #
@@ -140,3 +140,8 @@ help:
 		printf "\n"; \
 	}' \
 	| more $(shell test $(shell uname) = Darwin && echo '--no-init --raw-control-chars')
+
+## Format your code using black
+black:
+	python -m black --version
+	python -m black spotifAI/data
