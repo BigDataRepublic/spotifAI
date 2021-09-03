@@ -17,4 +17,4 @@ RUN mkdir /task/src
 
 COPY src/* /task/src/
 
-#CMD ["/usr/local/bin/python", "/src/main.py"]
+CMD ["/usr/local/bin/python", "/src/top_200_scraper.py"]
