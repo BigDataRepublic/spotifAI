@@ -49,8 +49,7 @@ class SpotifyPlaylistManager:
         )
 
         self.sp.playlist_replace_items(
-            playlist_id=vantage_playlist_id,
-            items=new_tracks_of_the_week["track_ids"],
+            playlist_id=vantage_playlist_id, items=new_tracks_of_the_week["track_ids"],
         )
 
         return """Playlist updated! Check out the hits from the future here: \

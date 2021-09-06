@@ -1,7 +1,7 @@
 name: spotifAI
 dependencies:
 
-- python=3.6
+- python=3.8
 
 - NumPy>=1.6.1
 - SciPy>=0.9
@@ -20,7 +20,7 @@ dependencies:
 - black
 - pip
 - pip:
-  - pytest-runner
+  - pytest-runnery
   - awscli
   - python-dotenv>=0.5.1
   - pandas_profiling
