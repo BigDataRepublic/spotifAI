@@ -145,3 +145,4 @@ help:
 black:
 	python -m black --version
 	python -m black spotifAI/data
+	python -m black spotifAI/deployment
