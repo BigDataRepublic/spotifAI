@@ -20,6 +20,7 @@ from google.cloud import storage
 # line below should be replaced with a new function once a trained model is available
 from models.predict_model import predict_random
 
+
 def run_app():
 
     # STEP 1: GET NEW DATA FROM NEW MUSIC FRIDAY PLAYLIST
@@ -48,7 +49,8 @@ def run_app():
     bucket.blob(destination).upload_from_string(df.to_csv(index=False), "text/csv")
 
     # STEP 4: PUBLISH TOP 20 TO OUR SPOTIFY PLAYLIST
-    # sort df on predicted hit position and put the 20 "best" track_ids in the request body
+    # sort df on predicted hit position and put the 20
+    # "best" track_ids in the request body
     request_body = {
         "track_ids": list(df.sort_values(by="max_position")["track_id"][:20].values)
     }
@@ -58,8 +60,11 @@ def run_app():
     )
 
     # post request to refresh the spotify playlist
-    r = requests.post(publish_playlist_url, data=json.dumps(request_body), headers=headers)
+    r = requests.post(
+        publish_playlist_url, data=json.dumps(request_body), headers=headers
+    )
     return r.text  # print returned response from publish_playlist end-point
+
 
 if __name__ == "__main__":
 
@@ -67,9 +72,7 @@ if __name__ == "__main__":
 
     # Define API endpoints
     app.add_url_rule(
-        "/run_app/",
-        view_func=run_app,
-        methods=["POST"],
+        "/run_app/", view_func=run_app, methods=["POST"],
     )
 
     waitress.serve(app, port=8082)
