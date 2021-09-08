@@ -15,9 +15,8 @@ import json
 from models.predict_model import predict_random
 
 
-# the url below is hosted by running the Dockerfile in the data folder
-# will need to be replaced with a different url once application is running on cloud
-get_new_music_friday_url = "http://127.0.0.1:5000/new_music_friday/"
+# url below is hosted on cloud run
+get_new_music_friday_url = "https://nmfscraper-fvfg5t6eda-ew.a.run.app/new_music_friday/"
 headers = {"content-type": "application/json"}
 # get new music friday data and load it in a pandas Dataframe
 r = requests.post(get_new_music_friday_url, headers=headers)
@@ -36,7 +35,7 @@ request_body = {
 
 # the url below is hosted by running the Dockerfile in the deployment folder
 # will need to be replaced with a different url once application is running on cloud
-publish_playlist_url = "http://127.0.0.1:5001/publish_playlist/"
+publish_playlist_url = "https://playlistpublisher-fvfg5t6eda-ew.a.run.app/publish_playlist/"
 
 # post request to refresh the spotify playlist
 r = requests.post(publish_playlist_url, data=json.dumps(request_body), headers=headers)
