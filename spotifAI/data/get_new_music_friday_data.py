@@ -159,7 +159,7 @@ class Scraper:
         along with additional features that are required
         for making predictions on hit potential"""
 
-        nmf = scraper.get_tracks_from_playlist(playlist_id)
+        nmf = self.get_tracks_from_playlist(playlist_id)
 
         # collect audio features for the nmf tracks
         audio_features = (
@@ -234,7 +234,7 @@ class Scraper:
 
     def get_new_music_friday(self):
         """Invokes the function get_playlist_with_features
-         specifically for the global Spotify playlist 'New Music Friday'"""
+        specifically for the global Spotify playlist 'New Music Friday'"""
 
         # collect tracks from global new music friday (nmf) playlist:
         # https://open.spotify.com/playlist/37i9dQZF1DX4JAvHpjipBk?si=a4f193c4d62c4d05
