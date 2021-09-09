@@ -18,61 +18,70 @@ import waitress
 from google.cloud import storage
 
 # line below should be replaced with a new function once a trained model is available
-from models.predict_model import predict_random
+from models.predict_model import predict_with_model
 
+class SpotifAIapp:
+    def __init__(self):
 
-def run_app():
+        self.model_name = "RFregressor_v1.p"
 
-    # STEP 1: GET NEW DATA FROM NEW MUSIC FRIDAY PLAYLIST
-    # url below is hosted on cloud run
-    get_new_music_friday_url = (
-        "https://nmfscraper-fvfg5t6eda-ew.a.run.app/new_music_friday/"
-    )
-    headers = {"content-type": "application/json"}
-    # get new music friday data and load it in a pandas Dataframe
-    r = requests.post(get_new_music_friday_url, headers=headers)
-    df = pd.DataFrame(json.loads(r.text))
+        # urls below are hosted on cloud run
+        self.get_new_music_friday_url = (
+            "https://nmfscraper-fvfg5t6eda-ew.a.run.app/new_music_friday/"
+        )
+        self.publish_playlist_url = (
+            "https://playlistpublisher-fvfg5t6eda-ew.a.run.app/publish_playlist/"
+        )
 
-    # STEP 2: PREDICT FUTURE MAXIMUM POSITION IN CHARTS
-    # Code below should be replaced once a trained model is available #
-    # add column 'max_position', for now filled with random predictions
-    df = predict_random(df)
+        self.headers = {"content-type": "application/json"}
 
-    # STEP 3: WRITE DATA TO CLOUD STORAGE BUCKET
-    # set up client that writes data to bucket
-    client = storage.Client()
-    bucket = client.get_bucket("spotifai_bucket")
+        # set up client that writes data to bucket
+        self.client = storage.Client()
+        self.bucket = self.client.get_bucket("spotifai_bucket")
 
-    # save the dataframe as a parquet file in a folder with the date of today
-    today = datetime.now()
-    destination = f"new_music_friday_data/{today.strftime('%Y-%m-%d')}/nmf_data.csv"
-    bucket.blob(destination).upload_from_string(df.to_csv(index=False), "text/csv")
+    def run_app(self):
 
-    # STEP 4: PUBLISH TOP 20 TO OUR SPOTIFY PLAYLIST
-    # sort df on predicted hit position and put the 20
-    # "best" track_ids in the request body
-    request_body = {
-        "track_ids": list(df.sort_values(by="max_position")["track_id"][:20].values)
-    }
+        # STEP 1: GET NEW DATA FROM NEW MUSIC FRIDAY PLAYLIST
 
-    publish_playlist_url = (
-        "https://playlistpublisher-fvfg5t6eda-ew.a.run.app/publish_playlist/"
-    )
+        # get new music friday data and load it in a pandas Dataframe
+        r = requests.post(self.get_new_music_friday_url, headers=self.headers)
+        df = pd.DataFrame(json.loads(r.text))
 
-    # post request to refresh the spotify playlist
-    r = requests.post(
-        publish_playlist_url, data=json.dumps(request_body), headers=headers
-    )
-    return r.text  # print returned response from publish_playlist end-point
+        # STEP 2: PREDICT FUTURE MAXIMUM POSITION IN CHARTS
+        # Code below should be replaced once a trained model is available #
+        # add column 'max_position', for now filled with random predictions
+        df = predict_with_model(df, model_bucket=self.bucket, model_name=self.model_name)
+
+        # STEP 3: WRITE DATA TO CLOUD STORAGE BUCKET
+
+        # save the dataframe as a csv in a folder with the date of today
+        today = datetime.now()
+        destination = f"new_music_friday_data/{today.strftime('%Y-%m-%d')}/nmf_data.csv"
+        self.bucket.blob(destination).upload_from_string(df.to_csv(index=False), "text/csv")
+
+        # STEP 4: PUBLISH TOP 20 TO OUR SPOTIFY PLAYLIST
+        # sort df on predicted hit position and put the 20
+        # "best" track_ids in the request body
+        request_body = {
+            "track_ids": list(df.sort_values(by="max_position")["track_id"][:20].values)
+        }
+
+        # post request to refresh the spotify playlist
+        r = requests.post(
+            self.publish_playlist_url, data=json.dumps(request_body), headers=self.headers
+        )
+        return r.text  # print returned response from publish_playlist end-point
 
 
 if __name__ == "__main__":
+
+    spotifai_app = SpotifAIapp()
 
     app = Flask(__name__)
 
     # Define API endpoints
     app.add_url_rule(
-        "/run_app/", view_func=run_app, methods=["POST"],
+        "/run_app/", view_func=spotifai_app.run_app, methods=["POST"],
     )
 
     waitress.serve(app, port=8082)
