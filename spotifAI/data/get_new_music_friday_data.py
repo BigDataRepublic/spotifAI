@@ -3,8 +3,8 @@
  enriches those tracks with additional features
  obtained via the spotify API"""
 
-from dotenv import load_dotenv
-import os
+# from dotenv import load_dotenv
+# import os
 import time
 from datetime import datetime
 import pandas as pd
@@ -13,9 +13,9 @@ from spotipy.oauth2 import SpotifyClientCredentials
 from urllib3.exceptions import ReadTimeoutError, MaxRetryError
 import waitress
 from flask import Flask
+from google.cloud import secretmanager
 
-
-load_dotenv()  # load environment variables from .env file (file not on github)
+# load_dotenv()  # load environment variables from .env file (file not on github)
 
 
 class Scraper:
@@ -24,14 +24,31 @@ class Scraper:
     additional features for the tracks in that playlist"""
 
     def __init__(self):
-        cid = os.environ.get("SPOTIFY_CLIENT_ID")
-        secret = os.environ.get("SPOTIFY_CLIENT_SECRET")
+        cid = self.access_secret_version(
+            "projects/420207002838/secrets/SPOTIFY_CLIENT_ID/versions/1"
+        )
+        secret = self.access_secret_version(
+            "projects/420207002838/secrets/SPOTIFY_CLIENT_SECRET/versions/1"
+        )
         client_credentials_manager = SpotifyClientCredentials(
             client_id=cid, client_secret=secret
         )
         self.spotify = spotipy.Spotify(
             client_credentials_manager=client_credentials_manager
         )
+
+    @staticmethod
+    def access_secret_version(secret_version_id):
+        """Return the value of a secret's version"""
+
+        # Create the Secret Manager client.
+        client = secretmanager.SecretManagerServiceClient()
+
+        # Access the secret version.
+        response = client.access_secret_version(name=secret_version_id)
+
+        # Return the decoded payload.
+        return response.payload.data.decode("UTF-8")
 
     def get_tracks_from_playlist(self, playlist_url):
         """queries data for a specific playlist url"""
@@ -142,7 +159,7 @@ class Scraper:
         along with additional features that are required
         for making predictions on hit potential"""
 
-        nmf = scraper.get_tracks_from_playlist(playlist_id)
+        nmf = self.get_tracks_from_playlist(playlist_id)
 
         # collect audio features for the nmf tracks
         audio_features = (
@@ -152,8 +169,8 @@ class Scraper:
                     for uid in nmf.track_id.values
                 ]
             )
-                .rename(columns={"id": "track_id"})
-                .drop(columns=["type", "uri", "track_href", "analysis_url"])
+            .rename(columns={"id": "track_id"})
+            .drop(columns=["type", "uri", "track_href", "analysis_url"])
         )
 
         # merge nmf tracks with audio features
@@ -177,12 +194,12 @@ class Scraper:
                     lambda uid: other_track_info_dict.get(uid)["release_date"]
                 )
             )
-                .assign(
+            .assign(
                 explicit=lambda df: df["track_id"].apply(
                     lambda uid: other_track_info_dict.get(uid)["explicit"]
                 )
             )
-                .assign(
+            .assign(
                 artist_ids=lambda df: df["track_id"].apply(
                     lambda uid: other_track_info_dict.get(uid)["artist_ids"]
                 )
@@ -217,7 +234,7 @@ class Scraper:
 
     def get_new_music_friday(self):
         """Invokes the function get_playlist_with_features
-         specifically for the global Spotify playlist 'New Music Friday'"""
+        specifically for the global Spotify playlist 'New Music Friday'"""
 
         # collect tracks from global new music friday (nmf) playlist:
         # https://open.spotify.com/playlist/37i9dQZF1DX4JAvHpjipBk?si=a4f193c4d62c4d05
@@ -233,6 +250,7 @@ class Scraper:
 
         return playlist_df.to_json()
 
+
 if __name__ == "__main__":
 
     scraper = Scraper()
@@ -240,7 +258,8 @@ if __name__ == "__main__":
     app = Flask(__name__)
 
     # Define API endpoints
-    app.add_url_rule("/new_music_friday/", view_func=scraper.get_new_music_friday, methods=["POST"])
+    app.add_url_rule(
+        "/new_music_friday/", view_func=scraper.get_new_music_friday, methods=["POST"]
+    )
 
     waitress.serve(app, port=8080)
-
