@@ -1,3 +1,5 @@
+[![CI workflow](https://github.com/Vantage-AI/spotifAI/actions/workflows/autoformat_and_lint.yml/badge.svg)](https://github.com/Vantage-AI/spotifAI/actions/workflows/autoformat_and_lint.yml)
+
 spotifAI
 ==============================
 With SpotifAI, we provide you with a playlist of new music before it will become mainstream!
