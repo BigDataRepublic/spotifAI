@@ -8,7 +8,7 @@ from tempfile import TemporaryFile
 def predict_random(df):
     """Takes in a dataframe and adds a column 'max_position'
     filled with random values between 1 & 201"""
-    df = df.assign(max_position=np.random.randint(1, 202, df.shape[0]))
+    df = df.assign(rank=np.random.randint(1, 202, df.shape[0]))
     return df
 
 def predict_with_model(df, model_bucket, model_name):
@@ -33,7 +33,7 @@ def predict_with_model(df, model_bucket, model_name):
 
     # predict and assign prediction as new column
     df = df.assign(
-        max_position=[round(pred) for pred in loaded_model.predict(df[predictor_variables])])
+        rank=[round(pred) for pred in loaded_model.predict(df[predictor_variables])])
 
     return df
 
