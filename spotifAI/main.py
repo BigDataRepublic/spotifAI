@@ -63,7 +63,7 @@ class SpotifAIapp:
         # sort df on predicted hit position and put the 20
         # "best" track_ids in the request body
         request_body = {
-            "track_ids": list(df.sort_values(by="rank")["track_id"][:20].values)
+            "track_ids": list(df.sort_values(by="rank", ascending=False)["track_id"][:20].values)
         }
 
         # post request to refresh the spotify playlist
