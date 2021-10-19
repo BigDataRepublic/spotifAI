@@ -17,8 +17,8 @@ import time
 import pickle
 
 import lightgbm as lgb
-import optuna
-import optuna.integration.lightgbm as optuna_lgb
+# import optuna
+# import optuna.integration.lightgbm as optuna_lgb
 
 import shap
 
@@ -28,7 +28,7 @@ from sklearn.model_selection import cross_val_score
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 import pickle
 from itertools import permutations
-
+from datetime import datetime
 
 # df = pd.read_csv("/../../spotifAI/data/raw/Database_to_calculate_popularity.csv")
 
@@ -56,7 +56,8 @@ variables = [
     # 
     # 
 
-# df_final = df_final.loc[df_final["Country"] == "Global"]\
+df_final = df_final.loc[df_final["Country"] == "Global"]
+df_full = df_full.loc[df_full["country"] == "Global"]
     
 df_final = df_final\
     .rename(columns=str.lower)\
@@ -75,12 +76,16 @@ df_final = df_final\
 df_final[variables] = df_final[variables].apply(pd.to_numeric,errors='coerce', downcast = 'float').dropna()
 
 n_songs = len(df_final)
-# df_final["idx"] = range(n_songs)
 
 df_full = df_full[['date',"country", 'position', 'uri']]
+
 df_full['date'] = pd.to_datetime(df_full['date'])
+df_full.dropna(inplace=True)
+# df_full['day_of_year'] = df_full['date'].apply(lambda x: x.timetuple().tm_yday)
+# variables = variables + ["day_of_year"]
+
 # df_full["score"] =  np.ceil((201 - df_full["position"])**0.5)
-df_full["score"] =  np.floor(30*(1- (df_full["position"]/200)**0.2))
+df_full["score"] =  np.floor(15*(1- (df_full["position"]/200)**0.5))
 
 df_full = df_full.set_index("uri").sort_values("date", ascending=True)
 
@@ -94,15 +99,19 @@ df = df.sort_values(["date", "country"] , ascending=True)
 # df = df.reset_index().set_index(["idx"])
 
 # df_final.sort_values("score").plot( y ="score")
-df_full["score"].min()
-df_full["score"].hist()
+# df_full["score"].min()
+# df_full["score"].hist()
 # %%
+
+
+#%%
+
 # df_final = df_final.sort_values("score", ascending=True)
 # X = df_final[variables].astype(np.float32).values
 # y = df_final["score"].values.round(0)
 
 # df = df[df["score"]<30]
-df_test = df_final.sample(n = 1000)
+df_test = df_final.sample(n = 0)
 df_train = df.drop(index=df_test.index, errors=0)
 
 query_train = df_train.groupby(["date", "country"])["date"].count().to_numpy()
@@ -110,9 +119,19 @@ query_train = df_train.groupby(["date", "country"])["date"].count().to_numpy()
 X_train=df_train[variables].astype(np.float32).values
 y_train=df_train["score"].values
 
-X_test=df_test[variables].astype(np.float32).values
+# X_val = X_train[-1000000:,:]
+# y_val = y_train[-1000000:]
+# query_val = query_train[-1000000:]
+
+# X_train = X_train[:-1000000,:]
+# y_train = y_train[:-1000000]
+# query_train = query_train[:-1000000]
+
+    
+# X_test=df_test[variables].astype(np.float32).values
 
 dtrain = lgb.Dataset(X_train, label=y_train, group=query_train, feature_name=variables)
+# dval = lgb.Dataset(X_val, label=y_val, group=query_val, feature_name=variables)
 
 #%%
 
@@ -154,13 +173,14 @@ history_fig.write_html('history_fig.html', auto_open=True)
 params = {
      'objective': 'rank_xendcg',
      'metric': 'ndcg',
-     'boosting': 'goss',
+      'boosting': 'goss',
      'num_threads': 4,
      'force_row_wise': True,
      'feature_pre_filter': False,
-     'lambda_l1': 0.10,
-     'lambda_l2': 0.10,
-     'num_leaves': 256,
+     'lambda_l1': 0,
+     'lambda_l2': 0,
+     "max_depth": 8,
+     'num_leaves': 64,
      'feature_fraction': 1,
      'bagging_fraction': 1.0,
      'bagging_freq': 0,
@@ -171,24 +191,34 @@ params = {
 #     model= pickle.load(f)    
 
 # params= best_params
-model = lgb.train(params, dtrain, verbose_eval=0)
-y_pred = model.predict(X_test)
+model = lgb.train(params, dtrain, valid_sets=None, verbose_eval=0, num_boost_round=100, early_stopping_rounds=None)
+y_pred = model.predict(X_train)
 
-df_test["predicted_ranking"] = y_pred
-df_test = df_test.sort_values("predicted_ranking", ascending=False)
-df_test["popularity"] = np.log(df_test["popularity"])
-df_test.plot.scatter(x="popularity", y="predicted_ranking")
+# model.feature_names = variables
 
+# df_test["predicted_ranking"] = y_pred
+# df_test = df_test.sort_values("predicted_ranking", ascending=False)
+# df_test["popularity"] = np.log(df_test["popularity"])
+# df_test.plot.scatter(x="popularity", y="predicted_ranking")
+
+# model.save_model('model.txt', num_iteration=model.best_iteration)
+# model = lgb.Booster(model_file='model.txt')
+
+
+model.feature_names = variables
 # Save the LightGBM model
 with open('lgb_ranker.pkl', 'wb') as f:
     pickle.dump(model, f)    
 
+lgb.plot_importance(model)
 #%%
 from sklearn.metrics import ndcg_score
 
 # load the LightGBM model
 with open('lgb_ranker.pkl', 'rb') as f:
-    model= pickle.load(f)    
+    modelz= pickle.load(f)    
+
+modelz.feature_names
 
 def rank_songs(df, model):
     
@@ -217,7 +247,6 @@ test = rank_songs(df_test, model)
 #%% Analyze our final model
 
 # plot builtin feature importance
-optuna_lgb.plot_importance(model)
 
 # Use SHAP library for more advanced model interpretation
 explainer = shap.TreeExplainer(model)
