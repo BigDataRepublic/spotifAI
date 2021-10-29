@@ -33,7 +33,7 @@ def predict_with_model(df, model_bucket, model_name):
 
     # predict and assign prediction as new column
     df = df.assign(
-        rank=[round(pred) for pred in loaded_model.predict(df[predictor_variables])])
+        score=loaded_model.predict(df[predictor_variables]))
 
     return df
 

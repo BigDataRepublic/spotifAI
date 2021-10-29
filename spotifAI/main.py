@@ -48,8 +48,6 @@ class SpotifAIapp:
         df = pd.DataFrame(json.loads(r.text))
 
         # STEP 2: PREDICT RELATIVE RANK IN CHARTS
-        # Code below should be replaced once a trained model is available #
-        # add column 'rank', for now filled with random predictions
         df = predict_with_model(df, model_bucket=self.bucket, model_name=self.model_name)
 
         # STEP 3: WRITE DATA TO CLOUD STORAGE BUCKET
@@ -63,7 +61,7 @@ class SpotifAIapp:
         # sort df on predicted hit position and put the 20
         # "best" track_ids in the request body
         request_body = {
-            "track_ids": list(df.sort_values(by="rank", ascending=False)["track_id"][:20].values)
+            "track_ids": list(df.sort_values(by="score", ascending=False)["track_id"][:20].values)
         }
 
         # post request to refresh the spotify playlist
