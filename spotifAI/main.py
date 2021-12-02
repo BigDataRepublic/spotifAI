@@ -3,11 +3,11 @@ The steps that are globally taken are:
 1. Retrieve the new tracks + features from the
 new music friday playlist
 2. Load in the trained model and predict for
- the new tracks what their future maximum position will be
+ the new tracks what their relative ranking would be
 3. Write the data including predictions to a cloud storage
 bucket for later use (evaluating + retraining the model)
-4. Sort the new tracks based on their predicted future max.
- position and publish the top 20 to Spotify"""
+4. Sort the new tracks based on their predicted rank
+ and publish the top 20 to Spotify"""
 
 import pandas as pd
 import requests
@@ -23,7 +23,7 @@ from models.predict_model import predict_with_model
 class SpotifAIapp:
     def __init__(self):
 
-        self.model_name = "RFregressor_v1.p"
+        self.model_name = "lgb_ranker.p"
 
         # urls below are hosted on cloud run
         self.get_new_music_friday_url = (
@@ -47,9 +47,7 @@ class SpotifAIapp:
         r = requests.post(self.get_new_music_friday_url, headers=self.headers)
         df = pd.DataFrame(json.loads(r.text))
 
-        # STEP 2: PREDICT FUTURE MAXIMUM POSITION IN CHARTS
-        # Code below should be replaced once a trained model is available #
-        # add column 'max_position', for now filled with random predictions
+        # STEP 2: PREDICT RELATIVE RANK IN CHARTS
         df = predict_with_model(df, model_bucket=self.bucket, model_name=self.model_name)
 
         # STEP 3: WRITE DATA TO CLOUD STORAGE BUCKET
@@ -63,7 +61,7 @@ class SpotifAIapp:
         # sort df on predicted hit position and put the 20
         # "best" track_ids in the request body
         request_body = {
-            "track_ids": list(df.sort_values(by="max_position")["track_id"][:20].values)
+            "track_ids": list(df.sort_values(by="score", ascending=False)["track_id"][:20].values)
         }
 
         # post request to refresh the spotify playlist

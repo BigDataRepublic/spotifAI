@@ -6,13 +6,13 @@ import pickle
 from tempfile import TemporaryFile
 
 def predict_random(df):
-    """Takes in a dataframe and adds a column 'max_position'
+    """Takes in a dataframe and adds a column 'rank'
     filled with random values between 1 & 201"""
-    df = df.assign(max_position=np.random.randint(1, 202, df.shape[0]))
+    df = df.assign(rank=np.random.randint(1, 202, df.shape[0]))
     return df
 
 def predict_with_model(df, model_bucket, model_name):
-    """Takes in a dataframe and adds a column 'max_position',
+    """Takes in a dataframe and adds a column 'rank',
     predicted by a trained classifier that is loaded in from the
     storage bucket with the provided modelname argument"""
 
@@ -33,7 +33,7 @@ def predict_with_model(df, model_bucket, model_name):
 
     # predict and assign prediction as new column
     df = df.assign(
-        max_position=[round(pred) for pred in loaded_model.predict(df[predictor_variables])])
+        score=loaded_model.predict(df[predictor_variables]))
 
     return df
 

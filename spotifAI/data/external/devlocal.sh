@@ -1,0 +1,2 @@
+docker build -t top-200-scraper .
+docker run -i --memory="10g" --shm-size 2g -p 9999:9999 -v "/${PWD}/src":/task/src top-200-scraper bash -c "pip install jupyterlab && jupyter-lab --ip=0.0.0.0 --port=9999 --no-browser --allow-root --notebook-dir=/task --NotebookApp.token='' --NotebookApp.password=''"
