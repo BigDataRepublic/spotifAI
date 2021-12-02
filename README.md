@@ -11,3 +11,5 @@ Find our playlist and give it a like [here](https://open.spotify.com/playlist/7o
 
 
 ![img.png](references/playlist_screenshot.png)
+
+Read blogs about this project and other interesting subjects via: [https://medium.com/vantageai](https://medium.com/vantageai) :smiley:
