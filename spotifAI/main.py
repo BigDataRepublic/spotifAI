@@ -20,6 +20,7 @@ from google.cloud import storage
 # line below should be replaced with a new function once a trained model is available
 from models.predict_model import predict_with_model
 
+
 class SpotifAIapp:
     def __init__(self):
 
@@ -48,25 +49,33 @@ class SpotifAIapp:
         df = pd.DataFrame(json.loads(r.text))
 
         # STEP 2: PREDICT RELATIVE RANK IN CHARTS
-        df = predict_with_model(df, model_bucket=self.bucket, model_name=self.model_name)
+        df = predict_with_model(
+            df, model_bucket=self.bucket, model_name=self.model_name
+        )
 
         # STEP 3: WRITE DATA TO CLOUD STORAGE BUCKET
 
         # save the dataframe as a csv in a folder with the date of today
         today = datetime.now()
         destination = f"new_music_friday_data/{today.strftime('%Y-%m-%d')}/nmf_data.csv"
-        self.bucket.blob(destination).upload_from_string(df.to_csv(index=False), "text/csv")
+        self.bucket.blob(destination).upload_from_string(
+            df.to_csv(index=False), "text/csv"
+        )
 
         # STEP 4: PUBLISH TOP 20 TO OUR SPOTIFY PLAYLIST
         # sort df on predicted hit position and put the 20
         # "best" track_ids in the request body
         request_body = {
-            "track_ids": list(df.sort_values(by="score", ascending=False)["track_id"][:20].values)
+            "track_ids": list(
+                df.sort_values(by="score", ascending=False)["track_id"][:20].values
+            )
         }
 
         # post request to refresh the spotify playlist
         r = requests.post(
-            self.publish_playlist_url, data=json.dumps(request_body), headers=self.headers
+            self.publish_playlist_url,
+            data=json.dumps(request_body),
+            headers=self.headers,
         )
         return r.text  # print returned response from publish_playlist end-point
 
