@@ -5,11 +5,13 @@ import numpy as np
 import pickle
 from tempfile import TemporaryFile
 
+
 def predict_random(df):
     """Takes in a dataframe and adds a column 'rank'
     filled with random values between 1 & 201"""
     df = df.assign(rank=np.random.randint(1, 202, df.shape[0]))
     return df
+
 
 def predict_with_model(df, model_bucket, model_name):
     """Takes in a dataframe and adds a column 'rank',
@@ -32,9 +34,6 @@ def predict_with_model(df, model_bucket, model_name):
     predictor_variables = loaded_model.feature_names
 
     # predict and assign prediction as new column
-    df = df.assign(
-        score=loaded_model.predict(df[predictor_variables]))
+    df = df.assign(score=loaded_model.predict(df[predictor_variables]))
 
     return df
-
-
