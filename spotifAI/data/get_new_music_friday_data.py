@@ -50,7 +50,7 @@ class Scraper:
         # Return the decoded payload.
         return response.payload.data.decode("UTF-8")
 
-    def get_tracks_from_playlist(self, playlist_url):
+    def get_tracks_from_playlist(self, playlist_url: str):
         """queries data for a specific playlist url"""
         # query tracks of playlist
         track_dicts = self.spotify.playlist(playlist_url)["tracks"]["items"]
