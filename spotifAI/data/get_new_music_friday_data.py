@@ -117,16 +117,19 @@ class Scraper:
         artist_ids = self.get_artist_ids(track_object)
         return release_date, explicit_boolean, artist_ids
 
-    def get_release_date(self, track_object):
+    @staticmethod
+    def get_release_date(track_object):
         """returns the release date for a given track_object"""
         return track_object["album"]["release_date"]
 
-    def get_explicit_boolean(self, track_object):
+    @staticmethod
+    def get_explicit_boolean(track_object):
         """returns a boolean value for whether the track contains
         explicit language or not  for a given track_object"""
         return track_object["explicit"]
 
-    def get_artist_ids(self, track_object):
+    @staticmethod
+    def get_artist_ids(track_object):
         """returns a list with one or more artist ids for a given track_id"""
         track_artists_object = track_object["artists"]
         return [artist["id"] for artist in track_artists_object]
@@ -139,13 +142,15 @@ class Scraper:
         artist_popularity = self.get_artist_popularity(artists_objects)
         return followers, artist_popularity
 
-    def get_followers(self, artists_objects):
+    @staticmethod
+    def get_followers(artists_objects):
         """If multiple artists participate in a track,
         the sum of the number of followers of every artist is returned"""
         artists_followers = [artist["followers"]["total"] for artist in artists_objects]
         return sum(artists_followers)
 
-    def get_artist_popularity(self, artists_objects):
+    @staticmethod
+    def get_artist_popularity(artists_objects):
         """If multiple artists participate in a track,
         the average of the popularity of every artist is returned,
         rounded to the nearest integer"""
@@ -190,17 +195,17 @@ class Scraper:
         # map values to columns
         df = (
             df.assign(
-                release_date=lambda df: df["track_id"].apply(
+                release_date=lambda x: x["track_id"].apply(
                     lambda uid: other_track_info_dict.get(uid)["release_date"]
                 )
             )
             .assign(
-                explicit=lambda df: df["track_id"].apply(
+                explicit=lambda x: x["track_id"].apply(
                     lambda uid: other_track_info_dict.get(uid)["explicit"]
                 )
             )
             .assign(
-                artist_ids=lambda df: df["track_id"].apply(
+                artist_ids=lambda x: x["track_id"].apply(
                     lambda uid: other_track_info_dict.get(uid)["artist_ids"]
                 )
             )
@@ -218,11 +223,11 @@ class Scraper:
             }
         # map values to columns
         df = df.assign(
-            followers=lambda df: df["track_id"].apply(
+            followers=lambda x: x["track_id"].apply(
                 lambda uid: artist_features_dict.get(uid)["followers"]
             )
         ).assign(
-            artist_popularity=lambda df: df["track_id"].apply(
+            artist_popularity=lambda x: x["track_id"].apply(
                 lambda uid: artist_features_dict.get(uid)["artist_popularity"]
             )
         )

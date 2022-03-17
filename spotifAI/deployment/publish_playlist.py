@@ -2,15 +2,11 @@
 new releases from the 'new music friday' playlist
 ranked via the spotify API"""
 
-# from dotenv import load_dotenv
-# import os
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import waitress
 from flask import Flask, request
 from google.cloud import secretmanager
-
-# load_dotenv()  # load environment variables from .env file (file not on github)
 
 
 class SpotifyPlaylistManager:
