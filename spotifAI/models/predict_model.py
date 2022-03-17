@@ -2,18 +2,19 @@
 and predicts the maximum future position in the
 global spotify top 200 chart for new tracks"""
 import numpy as np
+import pandas as pd
 import pickle
 from tempfile import TemporaryFile
 
 
-def predict_random(df):
+def predict_random(df: pd.DataFrame) -> pd.DataFrame:
     """Takes in a dataframe and adds a column 'rank'
     filled with random values between 1 & 201"""
     df = df.assign(rank=np.random.randint(1, 202, df.shape[0]))
     return df
 
 
-def predict_with_model(df, model_bucket, model_name):
+def predict_with_model(df, model_bucket, model_name: str) -> pd.DataFrame:
     """Takes in a dataframe and adds a column 'rank',
     predicted by a trained classifier that is loaded in from the
     storage bucket with the provided modelname argument"""

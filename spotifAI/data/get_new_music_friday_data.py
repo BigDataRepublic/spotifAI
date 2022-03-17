@@ -1,10 +1,8 @@
-"""script that scrapes the 100 newly released tracks from
+"""Script that scrapes the 100 newly released tracks from
  the global Spotify playlist 'new music friday' and
  enriches those tracks with additional features
  obtained via the spotify API"""
 
-# from dotenv import load_dotenv
-# import os
 import time
 from datetime import datetime
 import pandas as pd
@@ -14,8 +12,7 @@ from urllib3.exceptions import ReadTimeoutError, MaxRetryError
 import waitress
 from flask import Flask
 from google.cloud import secretmanager
-
-# load_dotenv()  # load environment variables from .env file (file not on github)
+from typing import Tuple, List
 
 
 class Scraper:
@@ -38,7 +35,7 @@ class Scraper:
         )
 
     @staticmethod
-    def access_secret_version(secret_version_id):
+    def access_secret_version(secret_version_id: str):
         """Return the value of a secret's version"""
 
         # Create the Secret Manager client.
@@ -50,7 +47,7 @@ class Scraper:
         # Return the decoded payload.
         return response.payload.data.decode("UTF-8")
 
-    def get_tracks_from_playlist(self, playlist_url: str):
+    def get_tracks_from_playlist(self, playlist_url: str) -> pd.DataFrame:
         """queries data for a specific playlist url"""
         # query tracks of playlist
         track_dicts = self.spotify.playlist(playlist_url)["tracks"]["items"]
@@ -104,11 +101,11 @@ class Scraper:
 
         return playlist_df
 
-    def get_audio_features(self, track_id):
+    def get_audio_features(self, track_id: str) -> dict:
         """returns the audio features for a given track_id"""
         return self.spotify.audio_features(track_id)
 
-    def get_other_track_info(self, track_id):
+    def get_other_track_info(self, track_id: str) -> Tuple[str, bool, List[str]]:
         """returns the release_date, explicit_boolean and
         a list with artist_ids for a given track_id"""
         track_object = self.spotify.track(track_id)
@@ -118,23 +115,23 @@ class Scraper:
         return release_date, explicit_boolean, artist_ids
 
     @staticmethod
-    def get_release_date(track_object):
+    def get_release_date(track_object: dict) -> str:
         """returns the release date for a given track_object"""
         return track_object["album"]["release_date"]
 
     @staticmethod
-    def get_explicit_boolean(track_object):
+    def get_explicit_boolean(track_object: dict) -> bool:
         """returns a boolean value for whether the track contains
         explicit language or not  for a given track_object"""
         return track_object["explicit"]
 
     @staticmethod
-    def get_artist_ids(track_object):
+    def get_artist_ids(track_object: dict) -> List[str]:
         """returns a list with one or more artist ids for a given track_id"""
         track_artists_object = track_object["artists"]
         return [artist["id"] for artist in track_artists_object]
 
-    def get_artist_features(self, artist_ids):
+    def get_artist_features(self, artist_ids: List[str]) -> Tuple[int, int]:
         """returns the artists' popularity and the number of followers
         for a given list of artist_ids that can contain one or more artists"""
         artists_objects = [self.spotify.artist(uid) for uid in artist_ids]
@@ -143,14 +140,14 @@ class Scraper:
         return followers, artist_popularity
 
     @staticmethod
-    def get_followers(artists_objects):
+    def get_followers(artists_objects: List[dict]) -> int:
         """If multiple artists participate in a track,
         the sum of the number of followers of every artist is returned"""
         artists_followers = [artist["followers"]["total"] for artist in artists_objects]
         return sum(artists_followers)
 
     @staticmethod
-    def get_artist_popularity(artists_objects):
+    def get_artist_popularity(artists_objects: List[dict]) -> int:
         """If multiple artists participate in a track,
         the average of the popularity of every artist is returned,
         rounded to the nearest integer"""
@@ -159,7 +156,7 @@ class Scraper:
             / len(artists_objects)
         )
 
-    def get_playlist_with_features(self, playlist_id):
+    def get_playlist_with_features(self, playlist_id: str) -> pd.DataFrame:
         """returns a dataframe with all tracks from a playlist,
         along with additional features that are required
         for making predictions on hit potential"""
@@ -237,7 +234,7 @@ class Scraper:
 
         return df
 
-    def get_new_music_friday(self):
+    def get_new_music_friday(self) -> str:
         """Invokes the function get_playlist_with_features
         specifically for the global Spotify playlist 'New Music Friday'"""
 

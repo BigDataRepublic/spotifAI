@@ -34,7 +34,7 @@ class SpotifyPlaylistManager:
         )
 
     @staticmethod
-    def access_secret_version(secret_version_id):
+    def access_secret_version(secret_version_id: str):
         """Return the value of a secret's version"""
 
         # Create the Secret Manager client.
@@ -46,7 +46,7 @@ class SpotifyPlaylistManager:
         # Return the decoded payload.
         return response.payload.data.decode("UTF-8")
 
-    def publish_playlist(self):
+    def publish_playlist(self) -> str:
         """Takes in a list with track_ids from the top 20
         of new releases with the highest predicted future
         positions in the charts and publish them to the playlist

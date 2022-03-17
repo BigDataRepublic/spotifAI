@@ -40,7 +40,7 @@ class SpotifAIapp:
         self.client = storage.Client()
         self.bucket = self.client.get_bucket("spotifai_bucket")
 
-    def run_app(self):
+    def run_app(self) -> str:
 
         # STEP 1: GET NEW DATA FROM NEW MUSIC FRIDAY PLAYLIST
 
