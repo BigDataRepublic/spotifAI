@@ -17,7 +17,6 @@ from flask import Flask
 import waitress
 from google.cloud import storage
 
-# line below should be replaced with a new function once a trained model is available
 from models.predict_model import predict_with_model
 
 
@@ -43,8 +42,6 @@ class SpotifAIapp:
     def run_app(self) -> str:
 
         # STEP 1: GET NEW DATA FROM NEW MUSIC FRIDAY PLAYLIST
-
-        # get new music friday data and load it in a pandas Dataframe
         r = requests.post(self.get_new_music_friday_url, headers=self.headers)
         df = pd.DataFrame(json.loads(r.text))
 
@@ -54,8 +51,6 @@ class SpotifAIapp:
         )
 
         # STEP 3: WRITE DATA TO CLOUD STORAGE BUCKET
-
-        # save the dataframe as a csv in a folder with the date of today
         today = datetime.now()
         destination = f"new_music_friday_data/{today.strftime('%Y-%m-%d')}/nmf_data.csv"
         self.bucket.blob(destination).upload_from_string(
@@ -63,21 +58,18 @@ class SpotifAIapp:
         )
 
         # STEP 4: PUBLISH TOP 20 TO OUR SPOTIFY PLAYLIST
-        # sort df on predicted hit position and put the 20
-        # "best" track_ids in the request body
         request_body = {
             "track_ids": list(
                 df.sort_values(by="score", ascending=False)["track_id"][:20].values
             )
         }
 
-        # post request to refresh the spotify playlist
         r = requests.post(
             self.publish_playlist_url,
             data=json.dumps(request_body),
             headers=self.headers,
         )
-        return r.text  # print returned response from publish_playlist end-point
+        return r.text
 
 
 if __name__ == "__main__":
