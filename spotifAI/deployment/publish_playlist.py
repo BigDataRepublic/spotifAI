@@ -20,6 +20,7 @@ class SpotifyPlaylistManager:
         cid = self.access_secret_version(
             "projects/420207002838/secrets/SPOTIFY_CLIENT_ID/versions/1"
         )
+
         secret = self.access_secret_version(
             "projects/420207002838/secrets/SPOTIFY_CLIENT_SECRET/versions/1"
         )
@@ -34,7 +35,7 @@ class SpotifyPlaylistManager:
         )
 
     @staticmethod
-    def access_secret_version(secret_version_id: str):
+    def access_secret_version(secret_version_id: str) -> str:
         """Return the value of a secret's version"""
 
         # Create the Secret Manager client.
