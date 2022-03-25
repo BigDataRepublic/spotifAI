@@ -1,3 +1,5 @@
+# flake8: noqa
+# to-do: refactor into train_model.py
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
