@@ -2,7 +2,7 @@
 
 ## Lint using flake8
 lint:
-	flake8 spotifAI
+	pflake8 spotifAI
 
 ## Format your code using black
 black:

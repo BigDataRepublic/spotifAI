@@ -1,7 +1,7 @@
 name: Auto-format and lint
 
 on:
-  # Trigger the workflow on pushes to main branch 
+  # Trigger the workflow on pushes to main branch
   # and pull requests to the development branch
   push:
     branches:
@@ -25,7 +25,7 @@ jobs:
           python-version: 3.8
 
       - name: Install Python dependencies
-        run: pip install black flake8
+        run: pip install black pyproject-flake8==0.0.1a2
 
       - name: Run black
         run: make black
