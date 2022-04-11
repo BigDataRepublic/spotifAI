@@ -1,29 +1,30 @@
-"""script that publishes the top 20 of the
-new releases from the 'new music friday' playlist
-ranked via the spotify API"""
+"""Script that publishes 'Vantage Hits From The Future' to Spotify.
 
-# from dotenv import load_dotenv
-# import os
+The top 20 of the new releases from the 'new music friday' playlist
+according to the model's predicted ranking is published via the
+spotify API.
+"""
+
+import logging
+
 import spotipy
-from spotipy.oauth2 import SpotifyOAuth
-import waitress
+import waitress  # type: ignore
 from flask import Flask, request
 from google.cloud import secretmanager
-
-# load_dotenv()  # load environment variables from .env file (file not on github)
+from spotipy.oauth2 import SpotifyOAuth
 
 
 class SpotifyPlaylistManager:
-    """Class to programmatically control the content
-    of our spotify playlist 'Vantage Hits From The Future'"""
+    """Class to manage the Spotify playlist."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         # authenticate to manage playlist
         scope = "playlist-modify-private"
 
         cid = self.access_secret_version(
             "projects/420207002838/secrets/SPOTIFY_CLIENT_ID/versions/1"
         )
+
         secret = self.access_secret_version(
             "projects/420207002838/secrets/SPOTIFY_CLIENT_SECRET/versions/1"
         )
@@ -33,14 +34,13 @@ class SpotifyPlaylistManager:
 
         self.sp = spotipy.Spotify(
             auth_manager=SpotifyOAuth(
-                client_id=cid, client_secret=secret, redirect_uri=red_uri, scope=scope,
+                client_id=cid, client_secret=secret, redirect_uri=red_uri, scope=scope
             )
         )
 
     @staticmethod
-    def access_secret_version(secret_version_id):
-        """Return the value of a secret's version"""
-
+    def access_secret_version(secret_version_id: str) -> str:
+        """Return the value of a secret's version."""
         # Create the Secret Manager client.
         client = secretmanager.SecretManagerServiceClient()
 
@@ -50,18 +50,22 @@ class SpotifyPlaylistManager:
         # Return the decoded payload.
         return response.payload.data.decode("UTF-8")
 
-    def publish_playlist(self):
-        """Takes in a list with track_ids from the top 20
+    def publish_playlist(self) -> str:
+        """Publish the playlist to a personal Spotify account.
+
+        Takes in a list with track_ids from the top 20
         of new releases with the highest predicted future
         positions in the charts and publish them to the playlist
-        "Vantage Hits From The Future" (by replacing the 20 old
-         tracks in there with the 20 new ones)
+        'Vantage Hits From The Future' (by replacing the 20 old
+        tracks in there with the 20 new ones).
 
-         The request body should be structured like this:
-         {"track_ids":
-         ["<track_id_1>","<track_id_2>","<etc>"]}
+        The request body should be structured like this:
+        {"track_ids":
+        ["<track_id_1>","<track_id_2>","<etc>"]}
+
+        Returns:
+            - String with information about where to find the playlist
         """
-
         new_tracks_of_the_week = request.get_json()
 
         vantage_playlist_id = (
@@ -70,7 +74,7 @@ class SpotifyPlaylistManager:
         )
 
         self.sp.playlist_replace_items(
-            playlist_id=vantage_playlist_id, items=new_tracks_of_the_week["track_ids"],
+            playlist_id=vantage_playlist_id, items=new_tracks_of_the_week["track_ids"]
         )
 
         return """Playlist updated! Check out the hits from the future here: \
@@ -78,6 +82,9 @@ class SpotifyPlaylistManager:
 
 
 if __name__ == "__main__":
+
+    FORMAT = "%(asctime)s|%(levelname)s|%(message)s"
+    logging.basicConfig(format=FORMAT, level=logging.INFO)
 
     playlist_manager = SpotifyPlaylistManager()
 
