@@ -11,10 +11,10 @@ RUN tar -xvzf geckodriver*
 
 ENV PATH=$PATH:/task
 
-RUN pip install requests beautifulsoup4 selenium wget jupyterlab pandas
+RUN pip install -r requirements.txt
 
-RUN mkdir /task/src
+RUN mkdir /task
 
-COPY src/* /task/src/
+COPY . /task/
 
-CMD ["/usr/local/bin/python", "/src/top_200_scraper.py"]
+CMD ["/usr/local/bin/python", "top_200_scraper.py"]
