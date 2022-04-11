@@ -1,28 +1,31 @@
-"""This script orchestrates the whole use case.
+"""This script orchestrates the whole Spotifai app.
+
 The steps that are globally taken are:
 1. Retrieve the new tracks + features from the
 new music friday playlist
 2. Load in the trained model and predict for
- the new tracks what their relative ranking would be
+the new tracks what their relative ranking would be
 3. Write the data including predictions to a cloud storage
 bucket for later use (evaluating + retraining the model)
 4. Sort the new tracks based on their predicted rank
- and publish the top 20 to Spotify"""
+and publish the top 20 to Spotify
+"""
+
+import json
+import logging
+from datetime import datetime
 
 import pandas as pd
-import requests
-import json
-from datetime import datetime
+import requests  # type: ignore
+import waitress  # type: ignore
 from flask import Flask
-import waitress
 from google.cloud import storage
-
-# line below should be replaced with a new function once a trained model is available
 from models.predict_model import predict_with_model
+from requests.adapters import HTTPAdapter, Retry  # type: ignore
 
 
 class SpotifAIapp:
-    def __init__(self):
+    def __init__(self) -> None:
 
         self.model_name = "lgb_ranker.p"
 
@@ -40,12 +43,23 @@ class SpotifAIapp:
         self.client = storage.Client()
         self.bucket = self.client.get_bucket("spotifai_bucket")
 
-    def run_app(self):
+    def run_app(self) -> str:
+        """Function to run the app that determines the content of the playlist to publish.
 
+        Returns:
+            object: a text with the result of the request to publish the playlist
+        """
         # STEP 1: GET NEW DATA FROM NEW MUSIC FRIDAY PLAYLIST
+        s = requests.Session()
 
-        # get new music friday data and load it in a pandas Dataframe
-        r = requests.post(self.get_new_music_friday_url, headers=self.headers)
+        retries = Retry(
+            total=3, backoff_factor=2, status_forcelist=[500], raise_on_status=True
+        )
+
+        s.mount("https://", HTTPAdapter(max_retries=retries))
+
+        r = s.post(self.get_new_music_friday_url, headers=self.headers)
+
         df = pd.DataFrame(json.loads(r.text))
 
         # STEP 2: PREDICT RELATIVE RANK IN CHARTS
@@ -54,8 +68,6 @@ class SpotifAIapp:
         )
 
         # STEP 3: WRITE DATA TO CLOUD STORAGE BUCKET
-
-        # save the dataframe as a csv in a folder with the date of today
         today = datetime.now()
         destination = f"new_music_friday_data/{today.strftime('%Y-%m-%d')}/nmf_data.csv"
         self.bucket.blob(destination).upload_from_string(
@@ -63,32 +75,29 @@ class SpotifAIapp:
         )
 
         # STEP 4: PUBLISH TOP 20 TO OUR SPOTIFY PLAYLIST
-        # sort df on predicted hit position and put the 20
-        # "best" track_ids in the request body
         request_body = {
             "track_ids": list(
                 df.sort_values(by="score", ascending=False)["track_id"][:20].values
             )
         }
 
-        # post request to refresh the spotify playlist
         r = requests.post(
             self.publish_playlist_url,
             data=json.dumps(request_body),
             headers=self.headers,
         )
-        return r.text  # print returned response from publish_playlist end-point
+        return r.text
 
 
 if __name__ == "__main__":
 
-    spotifai_app = SpotifAIapp()
+    FORMAT = "%(asctime)s|%(levelname)s|%(message)s"
+    logging.basicConfig(format=FORMAT, level=logging.INFO)
 
+    spotifai_app = SpotifAIapp()
     app = Flask(__name__)
 
     # Define API endpoints
-    app.add_url_rule(
-        "/run_app/", view_func=spotifai_app.run_app, methods=["POST"],
-    )
+    app.add_url_rule("/run_app/", view_func=spotifai_app.run_app, methods=["POST"])
 
     waitress.serve(app, port=8082)

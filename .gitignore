@@ -57,7 +57,7 @@ docs/_build/
 target/
 
 # DotEnv configuration
-.env
+notebooks/.env
 
 # Database
 *.db
@@ -83,3 +83,6 @@ target/
 
 # Json files that might hold secret keys
 *.json
+
+# exclude notebooks
+notebooks/

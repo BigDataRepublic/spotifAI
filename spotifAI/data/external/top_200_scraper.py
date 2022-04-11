@@ -1,11 +1,17 @@
+"""Script that scrapes the global top 200 charts.
+
+From https://spotifycharts.com/regional/global/daily/.
+"""
+
 import pandas as pd
 import selenium.webdriver
+from selenium.webdriver.firefox.options import Options
 
 # date = str(datetime.strftime(datetime.today(), '%d%m%Y'))
 date = "2021-08-30"
 
 # Inintialize browser
-options = selenium.webdriver.firefox.options.Options()
+options = Options()
 options.add_argument("--headless")
 browser = selenium.webdriver.Firefox(options=options)
 
@@ -18,7 +24,7 @@ browser.get(url_top_200)
 # as fp: fp.write(browser.get_screenshot_as_png())
 
 # Select all songs in list as elements
-song_elems = browser.find_elements_by_xpath(
+song_elems = browser.find_element_by_xpath(
     "/html/body/div/div/div/div/span/table/tbody/tr"
 )
 

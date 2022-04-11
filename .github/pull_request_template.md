@@ -1,6 +1,7 @@
 ### Type of change
 
 - [ ] Bug fix 
+- [ ] Refactoring
 - [ ] New feature 
 
 ---
