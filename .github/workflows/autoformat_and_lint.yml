@@ -25,7 +25,7 @@ jobs:
           python-version: 3.8
 
       - name: Install Python dependencies
-        run: pip install black pyproject-flake8==0.0.1a2
+        run: pip install black flake8 pyproject-flake8==0.0.1a2
 
       - name: Run black
         run: make black
