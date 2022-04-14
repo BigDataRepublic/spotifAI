@@ -1,0 +1,31 @@
+version: "3.7"
+
+services:
+
+  nmfscraper:
+    container_name: nmfscraper
+    image: python:3.8-slim-buster
+    build:
+      context: ./spotifAI/data
+      dockerfile: Dockerfile
+    ports:
+      - "5000:8080"
+    working_dir: /app
+
+  playlistpublisher:
+    container_name: playlistpublisher
+    image: python:3.8-slim-buster
+    build:
+      context: ./spotifAI/deployment
+      dockerfile: Dockerfile
+    ports:
+      - "5001:8081"
+    working_dir: /app
+
+  spotifaiapprunner:
+    container_name: spotifaiapprunner
+    image: python:3.8-slim-buster
+    build:
+      context: ./spotifAI
+      dockerfile: Dockerfile
+    working_dir: /app
