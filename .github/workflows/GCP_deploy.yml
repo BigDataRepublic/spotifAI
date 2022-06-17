@@ -33,7 +33,7 @@ jobs:
           echo ::set-output name=sha_short::$(git rev-parse --short=8 ${{ github.sha }})
 
       - name: Build Docker image nmf_scraper
-        run: docker build gcr.io/spotifai/$IMAGE_NAME:$SHORTSHA \
+        run: docker build -t gcr.io/spotifai/$IMAGE_NAME:$SHORTSHA \
              -t gcr.io/spotifai/$IMAGE_NAME:latest .
         env:
           IMAGE_NAME: nmf_scraper
