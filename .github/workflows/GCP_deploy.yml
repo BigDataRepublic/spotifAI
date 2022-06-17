@@ -48,7 +48,8 @@ jobs:
 
       - name: Deploy Docker image nmf_scraper
         run: |
-          gcloud run deploy nmfscraper --image $IMAGE_NAME \
+          gcloud run deploy nmfscraper \
+          --image gcr.io/spotifai/$IMAGE_NAME:latest \
           --region europe-west1 --platform managed
         env:
           IMAGE_NAME: nmf_scraper
