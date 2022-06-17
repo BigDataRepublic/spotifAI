@@ -1,4 +1,5 @@
 [![CI workflow](https://github.com/Vantage-AI/spotifAI/actions/workflows/autoformat_and_lint.yml/badge.svg)](https://github.com/Vantage-AI/spotifAI/actions/workflows/autoformat_and_lint.yml)
+[![GCP deployment](https://github.com/Vantage-AI/spotifAI/actions/workflows/GCP_deploy.yml/badge.svg)](https://github.com/Vantage-AI/spotifAI/actions/workflows/GCP_deploy.yml)
 
 spotifAI
 ==============================
