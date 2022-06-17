@@ -7,7 +7,11 @@ on:
       - 36-add-docker-ci
 
 jobs:
-    deploy:
+  deploy-docker-images:
+    name: Build and push Docker images and deploy to Cloud Run
+    runs-on: ubuntu-latest
+
+    steps:
       - name: Setup Gcloud Account
         runs-on: ubuntu-latest
         env:
