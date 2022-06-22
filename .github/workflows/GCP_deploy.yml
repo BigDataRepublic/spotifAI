@@ -51,10 +51,12 @@ jobs:
         run: |
           gcloud run deploy $CLOUD_RUN_NAME \
           --image gcr.io/spotifai/$IMAGE_NAME:latest \
-          --region europe-west1 --platform managed
+          --region europe-west1 --platform managed \
+          --port=$PORT
         env:
           CLOUD_RUN_NAME: nmfscraper
           IMAGE_NAME: nmf_scraper
+          PORT: 8080
 
       - name: Build Docker image spotifai_app_runner
         run: |
@@ -75,10 +77,12 @@ jobs:
         run: |
           gcloud run deploy $CLOUD_RUN_NAME \
           --image gcr.io/spotifai/$IMAGE_NAME:latest \
-          --region europe-west1 --platform managed
+          --region europe-west1 --platform managed \
+          --port=$PORT
         env:
           CLOUD_RUN_NAME: spotifaiapprunner
           IMAGE_NAME: spotifai_app_runner
+          PORT: 8083
 
       - name: Build Docker image playlist_publisher
         run: |
@@ -99,7 +103,9 @@ jobs:
         run: |
           gcloud run deploy $CLOUD_RUN_NAME \
           --image gcr.io/spotifai/$IMAGE_NAME:latest \
-          --region europe-west1 --platform managed
+          --region europe-west1 --platform managed \
+          --port=$PORT
         env:
           CLOUD_RUN_NAME: playlistpublisher
           IMAGE_NAME: playlist_publisher
+          PORT: 8082
