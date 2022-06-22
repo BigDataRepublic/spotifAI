@@ -34,10 +34,11 @@ jobs:
 
       - name: Build Docker image nmf_scraper
         run: |
-          cd ./spotifAI/data/
+          cd $DOCKER_PATH
           docker build -t gcr.io/spotifai/$IMAGE_NAME:$SHORTSHA \
           -t gcr.io/spotifai/$IMAGE_NAME:latest .
         env:
+          DOCKER_PATH: ./spotifAI/data/
           IMAGE_NAME: nmf_scraper
           SHORTSHA: ${{ steps.vars.outputs.sha_short }}
 
@@ -48,8 +49,57 @@ jobs:
 
       - name: Deploy Docker image nmf_scraper
         run: |
-          gcloud run deploy nmfscraper \
+          gcloud run deploy $CLOUD_RUN_NAME \
           --image gcr.io/spotifai/$IMAGE_NAME:latest \
           --region europe-west1 --platform managed
         env:
+          CLOUD_RUN_NAME: nmfscraper
           IMAGE_NAME: nmf_scraper
+
+      - name: Build Docker image spotifai_app_runner
+        run: |
+          cd $DOCKER_PATH
+          docker build -t gcr.io/spotifai/$IMAGE_NAME:$SHORTSHA \
+          -t gcr.io/spotifai/$IMAGE_NAME:latest .
+        env:
+          DOCKER_PATH: ./spotifAI/
+          IMAGE_NAME: spotifai_app_runner
+          SHORTSHA: ${{ steps.vars.outputs.sha_short }}
+
+      - name: Push Docker image spotifai_app_runner
+        run: docker push gcr.io/spotifai/$IMAGE_NAME --all-tags
+        env:
+          IMAGE_NAME: spotifai_app_runner
+
+      - name: Deploy Docker image spotifai_app_runner
+        run: |
+          gcloud run deploy $CLOUD_RUN_NAME \
+          --image gcr.io/spotifai/$IMAGE_NAME:latest \
+          --region europe-west1 --platform managed
+        env:
+          CLOUD_RUN_NAME: spotifaiapprunner
+          IMAGE_NAME: spotifai_app_runner
+
+      - name: Build Docker image playlist_publisher
+        run: |
+          cd $DOCKER_PATH
+          docker build -t gcr.io/spotifai/$IMAGE_NAME:$SHORTSHA \
+          -t gcr.io/spotifai/$IMAGE_NAME:latest .
+        env:
+          DOCKER_PATH: ./spotifAI/deployment/
+          IMAGE_NAME: playlist_publisher
+          SHORTSHA: ${{ steps.vars.outputs.sha_short }}
+
+      - name: Push Docker image playlist_publisher
+        run: docker push gcr.io/spotifai/$IMAGE_NAME --all-tags
+        env:
+          IMAGE_NAME: playlist_publisher
+
+      - name: Deploy Docker image playlist_publisher
+        run: |
+          gcloud run deploy $CLOUD_RUN_NAME \
+          --image gcr.io/spotifai/$IMAGE_NAME:latest \
+          --region europe-west1 --platform managed
+        env:
+          CLOUD_RUN_NAME: playlistpublisher
+          IMAGE_NAME: playlist_publisher
