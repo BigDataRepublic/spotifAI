@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - 36-add-docker-ci
 
 jobs:
   deploy-docker-images:
