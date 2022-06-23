@@ -119,7 +119,7 @@ jobs:
           --http-method $METHOD
         env:
           SCHEDULED_JOB_NAME: weekly_playlist_update
-          DESCRIPTION: get new tracks, predict hit potential and publish top 20 of new tracks on a weekly basis
-          SCHEDULE: 0 12 * * 5
-          URI: https://spotifaiapprunner-fvfg5t6eda-ew.a.run.app/run_app/
+          DESCRIPTION: "get new tracks, predict hit potential and publish top 20 of new tracks on a weekly basis"
+          SCHEDULE: "0 12 * * 5"
+          URI: "https://spotifaiapprunner-fvfg5t6eda-ew.a.run.app/run_app/"
           METHOD: POST
