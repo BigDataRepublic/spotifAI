@@ -7,4 +7,3 @@ numpy==1.22
 requests==2.25.1
 google-cloud-storage==1.42.0
 fastparquet==0.7.1
-networkx
