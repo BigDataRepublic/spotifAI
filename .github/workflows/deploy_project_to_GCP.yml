@@ -1,0 +1,46 @@
+name: Deploy Docker Images to GCP
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-nmf-scraper:
+    name: Build and push Docker image nmf_scraper and deploy to Cloud Run
+    uses: ./.github/workflows/deploy_workflow.yml
+    with:
+      docker_path: ./spotifAI/data/
+      image_name: nmf_scraper
+      port: 8080
+      cloud_run_name: nmfscraper
+    secrets:
+      project_id: ${{ secrets.GCP_PROJECT_ID }}
+      service_account_email: ${{ secrets.GCP_EMAIL }}
+      service_account_key: ${{ secrets.GCP_CREDENTIALS }}
+
+  deploy-playlist-publisher:
+    name: Build and push Docker image playlist_publisher and deploy to Cloud Run
+    uses: ./.github/workflows/deploy_workflow.yml
+    with:
+      docker_path: ./spotifAI/deployment/
+      image_name: playlist_publisher
+      port: 8082
+      cloud_run_name: playlistpublisher
+    secrets:
+      project_id: ${{ secrets.GCP_PROJECT_ID }}
+      service_account_email: ${{ secrets.GCP_EMAIL }}
+      service_account_key: ${{ secrets.GCP_CREDENTIALS }}
+
+  deploy-spotifai-app-runner:
+    name: Build and push Docker image spotifai_app_runner and deploy to Cloud Run
+    uses: ./.github/workflows/deploy_workflow.yml
+    with:
+      docker_path: ./spotifAI/
+      image_name: spotifai_app_runner
+      port: 8083
+      cloud_run_name: spotifaiapprunner
+    secrets:
+      project_id: ${{ secrets.GCP_PROJECT_ID }}
+      service_account_email: ${{ secrets.GCP_EMAIL }}
+      service_account_key: ${{ secrets.GCP_CREDENTIALS }}

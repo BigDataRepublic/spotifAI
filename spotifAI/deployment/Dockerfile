@@ -9,7 +9,7 @@ WORKDIR /app
 RUN pip install -r requirements.txt
 RUN pip install -U python-dotenv
 
-EXPOSE 5001
+EXPOSE 8082
 
 # Command to run the script that launches a flask application
 CMD ["python", "publish_playlist.py"]

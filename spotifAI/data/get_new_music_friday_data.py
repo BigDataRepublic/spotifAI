@@ -71,34 +71,38 @@ class Scraper:
         rows = []
 
         for track_dict in track_dicts:
-            date_added = track_dict["added_at"].split("T")[0]
+            try:
+                date_added = track_dict["added_at"].split("T")[0]
 
-            # all other interesting variables are inside the 'track' dict
-            track_dict = track_dict["track"]
+                # all other interesting variables are inside the 'track' dict
+                track_dict = track_dict["track"]
 
-            track_id = track_dict["id"]
+                track_id = track_dict["id"]
 
-            # track_dict["artists"] can contain multiple elements
-            # if multiple artists are on a track.
-            # they are concatenated into one string with separator " ft. "
-            track_artist = " ft. ".join(
-                [artist_dict["name"] for artist_dict in track_dict["artists"]]
-            )
-            track_name = track_dict["name"]
+                # track_dict["artists"] can contain multiple elements
+                # if multiple artists are on a track.
+                # they are concatenated into one string with separator " ft. "
+                track_artist = " ft. ".join(
+                    [artist_dict["name"] for artist_dict in track_dict["artists"]]
+                )
+                track_name = track_dict["name"]
 
-            popularity = track_dict["popularity"]
-            spotify_url = track_dict["external_urls"]["spotify"]
+                popularity = track_dict["popularity"]
+                spotify_url = track_dict["external_urls"]["spotify"]
 
-            row_dict = {
-                "track_id": track_id,
-                "artist": track_artist,
-                "name": track_name,
-                "track_popularity": popularity,
-                "date_added": date_added,
-                "spotify_url": spotify_url,
-            }
+                row_dict = {
+                    "track_id": track_id,
+                    "artist": track_artist,
+                    "name": track_name,
+                    "track_popularity": popularity,
+                    "date_added": date_added,
+                    "spotify_url": spotify_url,
+                }
 
-            rows.append(row_dict)
+                rows.append(row_dict)
+            except TypeError:
+                # some track_dicts are corrupted, therefore skipped
+                continue
 
         playlist_df = pd.DataFrame.from_records(rows)
         playlist_df["date_of_scrape"] = datetime.now().strftime("%Y-%m-%d")
