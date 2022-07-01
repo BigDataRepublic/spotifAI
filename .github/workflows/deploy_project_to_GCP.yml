@@ -15,6 +15,7 @@ jobs:
       image_name: nmf_scraper
       port: 8080
       cloud_run_name: nmfscraper
+    secrets:
       project_id: ${{ secrets.GCP_PROJECT_ID }}
       service_account_email: ${{ secrets.GCP_EMAIL }}
       service_account_key: ${{ secrets.GCP_CREDENTIALS }}
@@ -27,6 +28,7 @@ jobs:
       image_name: playlist_publisher
       port: 8082
       cloud_run_name: playlistpublisher
+    secrets:
       project_id: ${{ secrets.GCP_PROJECT_ID }}
       service_account_email: ${{ secrets.GCP_EMAIL }}
       service_account_key: ${{ secrets.GCP_CREDENTIALS }}
@@ -39,6 +41,7 @@ jobs:
       image_name: spotifai_app_runner
       port: 8083
       cloud_run_name: spotifaiapprunner
+    secrets:
       project_id: ${{ secrets.GCP_PROJECT_ID }}
       service_account_email: ${{ secrets.GCP_EMAIL }}
       service_account_key: ${{ secrets.GCP_CREDENTIALS }}
