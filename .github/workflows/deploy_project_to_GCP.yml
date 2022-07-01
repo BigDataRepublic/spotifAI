@@ -9,7 +9,7 @@ on:
 jobs:
   deploy-nmf-scraper:
     name: Build and push Docker image nmf_scraper and deploy to Cloud Run
-    uses: .github/workflows/deploy_workflow.yml@main
+    uses: Vantage-AI/spotifAI/.github/workflows/deploy_workflow.yml@main
     with:
       docker_path: ./spotifAI/data/
       image_name: nmf_scraper
@@ -21,7 +21,7 @@ jobs:
 
   deploy-playlist-publisher:
     name: Build and push Docker image playlist_publisher and deploy to Cloud Run
-    uses: .github/workflows/deploy_workflow.yml@main
+    uses: Vantage-AI/spotifAI/.github/workflows/deploy_workflow.yml@main
     with:
       docker_path: ./spotifAI/deployment/
       image_name: playlist_publisher
@@ -33,7 +33,7 @@ jobs:
 
   deploy-spotifai-app-runner:
     name: Build and push Docker image spotifai_app_runner and deploy to Cloud Run
-    uses: .github/workflows/deploy_workflow.yml@main
+    uses: Vantage-AI/spotifAI/.github/workflows/deploy_workflow.yml@main
     with:
       docker_path: ./spotifAI/
       image_name: spotifai_app_runner
