@@ -100,4 +100,4 @@ if __name__ == "__main__":
     # Define API endpoints
     app.add_url_rule("/run_app/", view_func=spotifai_app.run_app, methods=["POST"])
 
-    waitress.serve(app, port=8082)
+    waitress.serve(app, port=8083)

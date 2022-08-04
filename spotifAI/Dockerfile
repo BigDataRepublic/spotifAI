@@ -11,5 +11,7 @@ RUN apt-get update; \
 # install all python requirements
 RUN pip install -r requirements.txt
 
+EXPOSE 8083
+
 # Command to run the script that launches a flask application
 CMD ["python", "main.py"]
