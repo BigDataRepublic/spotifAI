@@ -34,7 +34,7 @@ class SpotifyPlaylistManager:
 
         self.sp = spotipy.Spotify(
             auth_manager=SpotifyOAuth(
-                client_id=cid, client_secret=secret, redirect_uri=red_uri, scope=scope
+                client_id=cid, client_secret=secret, redirect_uri=red_uri, scope=scope, open_browser=False,
             )
         )
 
