@@ -45,7 +45,7 @@ class GoogleCacheHandler(CacheHandler):
 
     def save_token_to_cache(self, token_info: dict) -> None:
         pass
-        # to implement (?): update dot-cache version with client.update_secret())
+        # to implement: update dot-cache with refreshed token
 
 
 class SpotifyPlaylistManager:
