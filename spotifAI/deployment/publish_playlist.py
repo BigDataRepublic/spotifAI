@@ -22,19 +22,23 @@ class SpotifyPlaylistManager:
         scope = "playlist-modify-private"
 
         cid = self.access_secret_version(
-            "projects/420207002838/secrets/SPOTIFY_CLIENT_ID/versions/1"
+            "projects/420207002838/secrets/SPOTIFY_CLIENT_ID/versions/latest"
         )
 
         secret = self.access_secret_version(
-            "projects/420207002838/secrets/SPOTIFY_CLIENT_SECRET/versions/1"
+            "projects/420207002838/secrets/SPOTIFY_CLIENT_SECRET/versions/latest"
         )
         red_uri = self.access_secret_version(
-            "projects/420207002838/secrets/SPOTIFY_REDIRECT_URI/versions/1"
+            "projects/420207002838/secrets/SPOTIFY_REDIRECT_URI/versions/latest"
         )
 
         self.sp = spotipy.Spotify(
             auth_manager=SpotifyOAuth(
-                client_id=cid, client_secret=secret, redirect_uri=red_uri, scope=scope, open_browser=False,
+                client_id=cid,
+                client_secret=secret,
+                redirect_uri=red_uri,
+                scope=scope,
+                open_browser=False,
             )
         )
 
