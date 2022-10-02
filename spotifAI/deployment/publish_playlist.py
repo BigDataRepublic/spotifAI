@@ -33,19 +33,18 @@ class GoogleCacheHandler(CacheHandler):
     This implementation loads and saves the cached access tokens to GCP.
     """
 
-    def __init__(self) -> None:
-        self.token_info = json.loads(
+    def get_cached_token(self) -> dict:
+        """Get and return a token_info dictionary object."""
+        return json.loads(
             access_secret_version(
                 "projects/420207002838/secrets/DOT-CACHE/versions/latest"
             )
         )
 
-    def get_cached_token(self) -> dict:
-        return self.token_info
-
     def save_token_to_cache(self, token_info: dict) -> None:
-        pass
+        """Save a token_info dictionary object to the cache and return None."""
         # to implement: update dot-cache with refreshed token
+        return None
 
 
 class SpotifyPlaylistManager:
