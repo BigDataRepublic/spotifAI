@@ -44,7 +44,7 @@ class SpotifAIapp:
         self.bucket = self.client.get_bucket("spotifai_bucket")
 
     def run_app(self) -> str:
-        """Function to run the app that determines the content of the playlist to publish.
+        """Function to run the steps required to refresh the future hits playlist.
 
         Returns:
             object: a text with the result of the request to publish the playlist
@@ -59,6 +59,7 @@ class SpotifAIapp:
         s.mount("https://", HTTPAdapter(max_retries=retries))
 
         r = s.post(self.get_new_music_friday_url, headers=self.headers)
+        r.raise_for_status()
 
         df = pd.DataFrame(json.loads(r.text))
 
@@ -86,6 +87,8 @@ class SpotifAIapp:
             data=json.dumps(request_body),
             headers=self.headers,
         )
+        r.raise_for_status()
+
         return r.text
 
 
