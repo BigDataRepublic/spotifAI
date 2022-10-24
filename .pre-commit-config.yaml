@@ -3,8 +3,8 @@ repos:
   rev: 19.3b0
   hooks:
     - id: black
-- repo: git://github.com/timothycrosley/isort
-  rev: 5.9.3
+- repo: https://github.com/pycqa/isort
+  rev: 5.10.1
   hooks:
     - id: isort
 - repo: https://github.com/pre-commit/pre-commit-hooks
