@@ -11,3 +11,8 @@ black:
 	python -m black spotifAI/models
 	python -m black spotifAI/deployment
 	python -m black spotifAI/main.py
+
+## Run static type checker for Python
+mypy:
+	mypy --version
+	mypy spotifAI

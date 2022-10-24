@@ -33,3 +33,6 @@ jobs:
 
       - name: Run flake8
         run: make lint
+
+      - name: Run mypy
+        run: make mypy
