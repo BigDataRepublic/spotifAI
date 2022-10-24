@@ -65,7 +65,7 @@ class SpotifyPlaylistManager:
             "projects/420207002838/secrets/SPOTIFY_REDIRECT_URI/versions/latest"
         )
 
-        handler = GoogleCacheHandler()
+        hAndler = GoogleCacheHandler()
 
         self.sp = spotipy.Spotify(
             auth_manager=SpotifyOAuth(
@@ -73,11 +73,11 @@ class SpotifyPlaylistManager:
                 client_secret=secret,
                 redirect_uri=red_uri,
                 scope=scope,
-                cache_handler=handler,
+                cache_handler=hAndler,
             )
         )
 
-    def publish_playlist(self):
+    def publish_playlist(self) -> str:
         """Publish the playlist to a personal Spotify account.
 
         Takes in a list with track_ids from the top 20
@@ -94,7 +94,7 @@ class SpotifyPlaylistManager:
             - String with information about where to find the playlist
         """
         new_tracks_of_the_week = request.get_json()
-        # assert new_tracks_of_the_week is not None
+        assert new_tracks_of_the_week is not None
 
         vantage_playlist_id = (
             "https://open.spotify.com/playlist/"
