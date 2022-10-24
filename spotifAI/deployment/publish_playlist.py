@@ -77,7 +77,7 @@ class SpotifyPlaylistManager:
             )
         )
 
-    def publish_playlist(self) -> str:
+    def publish_playlist(self):
         """Publish the playlist to a personal Spotify account.
 
         Takes in a list with track_ids from the top 20
@@ -94,6 +94,7 @@ class SpotifyPlaylistManager:
             - String with information about where to find the playlist
         """
         new_tracks_of_the_week = request.get_json()
+        # assert new_tracks_of_the_week is not None
 
         vantage_playlist_id = (
             "https://open.spotify.com/playlist/"
