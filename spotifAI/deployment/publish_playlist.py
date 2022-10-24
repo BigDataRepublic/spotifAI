@@ -65,7 +65,7 @@ class SpotifyPlaylistManager:
             "projects/420207002838/secrets/SPOTIFY_REDIRECT_URI/versions/latest"
         )
 
-        hAndler = GoogleCacheHandler()
+        handler = GoogleCacheHandler()
 
         self.sp = spotipy.Spotify(
             auth_manager=SpotifyOAuth(
@@ -73,7 +73,7 @@ class SpotifyPlaylistManager:
                 client_secret=secret,
                 redirect_uri=red_uri,
                 scope=scope,
-                cache_handler=hAndler,
+                cache_handler=handler,
             )
         )
 
