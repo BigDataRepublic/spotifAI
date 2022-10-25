@@ -94,6 +94,7 @@ class SpotifyPlaylistManager:
             - String with information about where to find the playlist
         """
         new_tracks_of_the_week = request.get_json()
+        assert new_tracks_of_the_week is not None
 
         vantage_playlist_id = (
             "https://open.spotify.com/playlist/"
