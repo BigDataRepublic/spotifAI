@@ -1,0 +1,8 @@
+black==22.3.0
+flake8==4.0.1
+flake8-docstrings==1.6.0
+isort==5.9.3
+mypy==0.910
+pep8-naming==0.11.1
+pre-commit==2.14.0
+pyproject-flake8==0.0.1a2

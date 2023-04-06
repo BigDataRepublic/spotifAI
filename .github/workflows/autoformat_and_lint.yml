@@ -17,18 +17,21 @@ jobs:
 
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v4
         with:
           python-version: 3.8
 
       - name: Install Python dependencies
-        run: pip install black flake8 pyproject-flake8==0.0.1a2
+        run: pip install -r requirements.dev.txt
 
       - name: Run black
         run: make black
 
       - name: Run flake8
         run: make lint
+
+      - name: Run mypy
+        run: make mypy
