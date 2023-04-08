@@ -86,3 +86,6 @@ notebooks/.env
 
 # exclude notebooks
 notebooks/
+
+# exclude data
+kaggle/
