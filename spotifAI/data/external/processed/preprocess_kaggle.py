@@ -63,4 +63,6 @@ df_final[variables] = (
 
 df = df_final.join(df_full.loc[df_full.index.isin(df_final.index)], how="inner")
 df = df.sort_values(["date", "country"], ascending=True)
+df[variables].astype(np.float32)
+
 df.to_csv(processed_path)
