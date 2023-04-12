@@ -89,3 +89,7 @@ notebooks/
 
 # exclude data
 *.csv
+
+# exclude pickle files
+*.p
+*.pkl
