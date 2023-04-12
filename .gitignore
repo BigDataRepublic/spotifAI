@@ -88,4 +88,4 @@ notebooks/.env
 notebooks/
 
 # exclude data
-kaggle/
+*.csv
