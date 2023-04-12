@@ -27,7 +27,7 @@ from requests.adapters import HTTPAdapter, Retry  # type: ignore
 class SpotifAIapp:
     def __init__(self) -> None:
 
-        self.model_name = "lgb_ranker.p"
+        self.model_name = "lgbm_model_v2.p"
 
         # urls below are hosted on cloud run
         self.get_new_music_friday_url = (
@@ -76,6 +76,7 @@ class SpotifAIapp:
         )
 
         # STEP 4: PUBLISH TOP 20 TO OUR SPOTIFY PLAYLIST
+        # sort by predicted rank (higher is better) and take top 20
         request_body = {
             "track_ids": list(
                 df.sort_values(by="score", ascending=False)["track_id"][:20].values
