@@ -86,3 +86,10 @@ notebooks/.env
 
 # exclude notebooks
 notebooks/
+
+# exclude data
+*.csv
+
+# exclude pickle files
+*.p
+*.pkl
