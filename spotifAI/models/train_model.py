@@ -82,6 +82,8 @@ lgbm_model = lgb.train(
     num_boost_round=500,
 )
 
+lgbm_model.feature_names = variables
+
 # Save the model to disk in pickle format
 VERSION = 2
 MODEL_NAME = f"lgbm_model_v{VERSION}.p"
