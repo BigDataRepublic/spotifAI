@@ -55,14 +55,14 @@ class SpotifyPlaylistManager:
         scope = "playlist-modify-private"
 
         cid = access_secret_version(
-            "projects/420207002838/secrets/SPOTIFY_CLIENT_ID/versions/latest"
+            "projects/420207002838/secrets/SPOTIFY_CLIENT_ID/versions/1"
         )
 
         secret = access_secret_version(
-            "projects/420207002838/secrets/SPOTIFY_CLIENT_SECRET/versions/latest"
+            "projects/420207002838/secrets/SPOTIFY_CLIENT_SECRET/versions/1"
         )
         red_uri = access_secret_version(
-            "projects/420207002838/secrets/SPOTIFY_REDIRECT_URI/versions/latest"
+            "projects/420207002838/secrets/SPOTIFY_REDIRECT_URI/versions/1"
         )
 
         handler = GoogleCacheHandler()
